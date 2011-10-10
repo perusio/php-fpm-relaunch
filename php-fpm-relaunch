@@ -1,0 +1,32 @@
+#!/bin/bash
+
+### Shell script to relaunch the php-fpm process when a 502 appears.
+
+SCRIPTNAME=${0##*/}
+
+## The number of maximum launch attempts if the first try fails.
+MAX_LAUNCH_ATTEMPTS=10
+
+## The php5-fpm program.
+PHP_FPM_NAME=$(basename $(which php5-fpm))
+
+## Launch the php-fpm process.
+function launch_php() {
+    ## The super command.
+    SUPER_PROG=$(which super)
+    [ -x $SUPER_PROG ] || exit 0
+    SUPER_CMD=php-fpm-launch
+    ## Relaunch php
+    $SUPER_PROG $SUPER_CMD && pgrep $PHP_FPM_NAME && exit 0
+
+    ## If the process didn't start try to launch it again.
+    LAUNCH_ATTEMPS=1
+    ## If the process didn't start try to relaunch it successively.
+    while [ $LAUNCH_ATTEMPS -lt $MAX_LAUNCH_ATTEMPTS ]; do
+        $SUPER_PROG $SUPER_CMD
+        LAUNCH_ATTEMPS=$((LAUNCH_ATTEMPS + 1))
+    done
+}
+
+## Check to see if the program is running.
+pgrep $PHP_FPM_NAME &>/dev/null && pkill -9 $PHP_FPM_NAME && launch_php
