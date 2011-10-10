@@ -7,8 +7,13 @@ SCRIPTNAME=${0##*/}
 ## The number of maximum launch attempts if the first try fails.
 MAX_LAUNCH_ATTEMPTS=10
 
+
+
 ## The php5-fpm program.
-PHP_FPM_NAME=$(basename $(which php5-fpm))
+PHP_FPM=/usr/sbin/php5-fpm
+[ -x $PHP_FPM ] || exit 0
+
+PHP_FPM_NAME=$(basename $PHP_FPM)
 
 ## Launch the php-fpm process.
 function launch_php() {
@@ -18,7 +23,7 @@ function launch_php() {
     SUPER_CMD=php-fpm-launch
     ## Relaunch php
     $SUPER_PROG $SUPER_CMD && pgrep $PHP_FPM_NAME && exit 0
-
+    echo "here"
     ## If the process didn't start try to launch it again.
     LAUNCH_ATTEMPS=1
     ## If the process didn't start try to relaunch it successively.
@@ -28,5 +33,5 @@ function launch_php() {
     done
 }
 
-## Check to see if the program is running.
-pgrep $PHP_FPM_NAME &>/dev/null && pkill -9 $PHP_FPM_NAME && launch_php
+## Check to see if the program is running if not start it. If it is kill it and relaunch it.
+(pgrep $PHP_FPM_NAME &>/dev/null || launch_php) || (pgrep $PHP_FPM_NAME &>/dev/null && pkill -9 $PHP_FPM_NAME && launch_php)
