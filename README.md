@@ -49,7 +49,7 @@ in both cases:
      in an unprivileged port that should be blocked at the firewall
      level. In this case `8888`.
  
- ## TODO
+## TODO
  
- Make a blog post describing the all process and configuration and
- detail.
+Make a blog post describing the all process and configuration and
+detail.
