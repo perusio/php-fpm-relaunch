@@ -4,26 +4,26 @@
 
 SCRIPTNAME=${0##*/}
 
+## Check the number of arguments.
+[ $# -ne 0 ] && echo "Usage: $SCRIPTNAME" && exit 1
+
 ## The number of maximum launch attempts if the first try fails.
 MAX_LAUNCH_ATTEMPTS=10
-
-
 
 ## The php5-fpm program.
 PHP_FPM=/usr/sbin/php5-fpm
 [ -x $PHP_FPM ] || exit 0
-
+## Get the program name.
 PHP_FPM_NAME=$(basename $PHP_FPM)
 
 ## Launch the php-fpm process.
 function launch_php() {
-    ## The super command.
+    ## The super commands.
     SUPER_PROG=$(which super)
     [ -x $SUPER_PROG ] || exit 0
-    SUPER_CMD=php-fpm-launch
+    SUPER_START_CMD=php-fpm-launch
     ## Relaunch php
-    $SUPER_PROG $SUPER_CMD && pgrep $PHP_FPM_NAME && exit 0
-    echo "here"
+    $SUPER_PROG $SUPER_START_CMD && pgrep $PHP_FPM_NAME && exit 0
     ## If the process didn't start try to launch it again.
     LAUNCH_ATTEMPS=1
     ## If the process didn't start try to relaunch it successively.
@@ -33,5 +33,13 @@ function launch_php() {
     done
 }
 
-## Check to see if the program is running if not start it. If it is kill it and relaunch it.
-(pgrep $PHP_FPM_NAME &>/dev/null || launch_php) || (pgrep $PHP_FPM_NAME &>/dev/null && pkill -9 $PHP_FPM_NAME && launch_php)
+## The super command for killing the php-fpm processes.
+SUPER_KILL_CMD=pkill-fpm
+
+## Check to see if the program is running if not start it. If it is
+## kill it and relaunch it.
+if pgrep $PHP_FPM_NAME &>/dev/null; then
+    $SUPER_PROG  $SUPER_KILL_CMD && launch_php
+else
+    launch_php
+fi
