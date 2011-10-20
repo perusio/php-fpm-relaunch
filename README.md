@@ -3,7 +3,7 @@
 ## Introduction
 
 This shell script is to be used as a CGI with
-[thttpd](http://www.acme.com/software/thttpd/) for automatically
+ [thttpd](http://www.acme.com/software/thttpd/) for automatically
 relaunching php-fpm whenever [Nginx](http://nginx.org) encounters a
 502. This gives you piece of mind when you're developing a site and
 getting the hang of php-fpm is proving somewhat challenging.
@@ -48,8 +48,15 @@ in both cases:
   3. thttpd is bound to 127.0.0.1 (or ::1 if you prefer IPv6) and runs
      in an unprivileged port that should be blocked at the firewall
      level. In this case `8888`.
+     
+     You can get the thttpd config on another github [repo](https://github.com/perusio/thttpd-config).  
  
 ## TODO
  
-Make a blog post describing the all process and configuration and
-detail.
+ 1. Make a blog post describing the all process and configuration and
+    detail.
+ 
+  2. Make the script talk with
+     [RRDtool](http://oss.oetiker.ch/rrdtool/) in order to have
+     **nice** graphs showing the distribution of 502s on a time
+     series.
